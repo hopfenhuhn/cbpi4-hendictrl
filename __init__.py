@@ -4,14 +4,20 @@ import logging
 from cbpi.api import *
 import time
 import datetime
+from collections import deque
 
-@parameters([Property.Number(label = "P", configurable = True, description="P Value of PID"),
-             Property.Number(label = "I", configurable = True, description="I Value of PID"),
-             Property.Number(label = "D", configurable = True, description="D Value of PID"),
-             Property.Select(label="SampleTime", options=[2,5], description="PID Sample time in seconds. Default: 5 (How often is the output calculation done)"),
-             Property.Number(label = "Max_Output", configurable = True, description="Power before Boil threshold is reached."),
-             Property.Number(label = "Boil_Threshold", configurable = True, description="When this temperature is reached, power will be set to Max Boil Output (default: 98 °C/208 F)"),
-             Property.Number(label = "Max_Boil_Output", configurable = True, default_value = 85, description="Power when Boil Threshold is reached.")])
+@parameters([Property.Number(label = "Gradient_Factor", configurable = True, default_value = 1, description="Gradient Factor"),
+             Property.Number(label = "Lookback_Time", configurable = True,, default_value = 15, description="Lockback Time [s]"),
+             Property.Number(label = "Mash_Power_Limit", configurable = True, default_value = 100, description="Maximum Mash Power [%]"),
+             Property.Number(label = "Boil_Power", configurable = True, default_value = 100, description="Boil Power [%]"),
+             Property.Number(label = "Boil_Threshold", configurable = True, default_value = 80, description="Boil Power Threshold [°C]")])
+             #Property.Number(label = "P", configurable = True, description="P Value of PID"),
+             #Property.Number(label = "I", configurable = True, description="I Value of PID"),
+             #Property.Number(label = "D", configurable = True, description="D Value of PID"),
+             #Property.Select(label="SampleTime", options=[2,5], description="PID Sample time in seconds. Default: 5 (How often is the output calculation done)"),
+             #Property.Number(label = "Max_Output", configurable = True, description="Power before Boil threshold is reached."),
+             #Property.Number(label = "Boil_Threshold", configurable = True, description="When this temperature is reached, power will be set to Max Boil Output (default: 98 °C/208 F)"),
+             #Property.Number(label = "Max_Boil_Output", configurable = True, default_value = 85, description="Power when Boil Threshold is reached.")
 
 class PIDBoil(CBPiKettleLogic):
 
