@@ -1,25 +1,41 @@
 import asyncio
 from asyncio import tasks
 import logging
+from unittest.mock import MagicMock, patch
 from cbpi.api import *
 import time
 import datetime
 from collections import deque
 
+logger = logging.getLogger(__name__)
+
+try:
+    import RPi.GPIO as GPIO
+except Exception:
+    logger.error("Failed to load RPi.GPIO. Using Mock")
+    MockRPi = MagicMock()
+    modules = {
+        "RPi": MockRPi,
+        "RPi.GPIO": MockRPi.GPIO
+    }
+    patcher = patch.dict("sys.modules", modules)
+    patcher.start()
+    import RPi.GPIO as GPIO
+
+mode = GPIO.getmode()
+if (mode == None):
+    GPIO.setmode(GPIO.BCM)
+              
+
+class HendiHeater(CBPiActor):
+    
 @parameters([Property.Number(label = "Gradient_Factor", configurable = True, default_value = 1, description="Gradient Factor"),
              Property.Number(label = "Lookback_Time", configurable = True,, default_value = 15, description="Lockback Time [s]"),
              Property.Number(label = "Mash_Power_Limit", configurable = True, default_value = 100, description="Maximum Mash Power [%]"),
              Property.Number(label = "Boil_Power", configurable = True, default_value = 100, description="Boil Power [%]"),
              Property.Number(label = "Boil_Threshold", configurable = True, default_value = 80, description="Boil Power Threshold [°C]")])
-             #Property.Number(label = "P", configurable = True, description="P Value of PID"),
-             #Property.Number(label = "I", configurable = True, description="I Value of PID"),
-             #Property.Number(label = "D", configurable = True, description="D Value of PID"),
-             #Property.Select(label="SampleTime", options=[2,5], description="PID Sample time in seconds. Default: 5 (How often is the output calculation done)"),
-             #Property.Number(label = "Max_Output", configurable = True, description="Power before Boil threshold is reached."),
-             #Property.Number(label = "Boil_Threshold", configurable = True, description="When this temperature is reached, power will be set to Max Boil Output (default: 98 °C/208 F)"),
-             #Property.Number(label = "Max_Boil_Output", configurable = True, default_value = 85, description="Power when Boil Threshold is reached.")
 
-class PIDBoil(CBPiKettleLogic):
+class GradientPowerControl(CBPiKettleLogic):
 
 
     async def on_stop(self):
