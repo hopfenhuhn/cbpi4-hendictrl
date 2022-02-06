@@ -26,8 +26,12 @@ mode = GPIO.getmode()
 if (mode == None):
     GPIO.setmode(GPIO.BCM)
               
-
+@parameters([Property.Select(label="onoff_pin", options=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27], description="On/Off GPIO"),
+             Property.Select(label="power_pin", options=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27], description="Power GPIO"),
+             Property.Number(label="pwm_freq", configurable = True, default_value = 100, description="PWM-Frequenz [Hz]"),
+             Property.Number(label="power_limit", configurable = True, default_value = 100, description="Power Limit [%]")])
 class HendiHeater(CBPiActor):
+    
     
 @parameters([Property.Number(label = "Gradient_Factor", configurable = True, default_value = 1, description="Gradient Factor"),
              Property.Number(label = "Lookback_Time", configurable = True,, default_value = 15, description="Lockback Time [s]"),
