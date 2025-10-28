@@ -1,0 +1,2 @@
+include cbpi4-hendictrl/config.yaml
+recursive-include cbpi4-hendictrl/static *
